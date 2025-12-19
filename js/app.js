@@ -1,1 +1,0 @@
-console.log("AR Viewer hazır");
