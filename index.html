@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1:1 Mimari AR Sunumu</title>
+    
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+    
+    <style>
+        body { margin: 0; padding: 0; background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        model-viewer { width: 100vw; height: 100vh; }
+
+        /* AR Başlat Butonu */
+        #ar-button {
+            background-color: #007bff;
+            color: white; border: none; border-radius: 50px;
+            padding: 16px 32px; font-size: 18px; font-weight: bold;
+            position: absolute; bottom: 40px; left: 50%;
+            transform: translateX(-50%); cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,123,255,0.4);
+            z-index: 100;
+        }
+
+        /* Yükleme Ekranı (Progress Bar) */
+        .progress-bar { width: 100%; height: 6px; background: #e0e0e0; position: absolute; top: 0; z-index: 200; }
+        .update-bar { width: 0%; height: 100%; background: #007bff; transition: width 0.3s; }
+
+        /* Talimat Kutusu */
+        #instructions {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9); padding: 10px 20px;
+            border-radius: 10px; font-size: 14px; color: #333; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <model-viewer 
+        src="model.glb" 
+        ios-src="model.usdz"
+        ar 
+        ar-modes="webxr scene-viewer quick-look" 
+        ar-placement="floor" 
+        ar-scale="fixed" 
+        camera-controls 
+        touch-action="none"
+        shadow-intensity="2"
+        exposure="1"
+        environment-image="neutral"
+        alt="1:1 Mimari Bina Modeli">
+
+        <div slot="progress-bar" class="progress-bar">
+            <div class="update-bar" id="update-bar"></div>
+        </div>
+
+        <div id="instructions">Binayı görmek için boş bir alan seçin</div>
+
+        <button slot="ar-button" id="ar-button">
+            🏢 SOKAĞA YERLEŞTİR (1:1)
+        </button>
+
+    </model-viewer>
+
+    <script>
+        // Yükleme barını kontrol eden script
+        const modelViewer = document.querySelector('model-viewer');
+        const updateBar = document.querySelector('#update-bar');
+        
+        modelViewer.addEventListener('progress', (event) => {
+            const progress = event.detail.totalProgress * 100;
+            updateBar.style.width = `${progress}%`;
+            if (progress === 100) {
+                setTimeout(() => { updateBar.parentElement.style.display = 'none'; }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
