@@ -2,74 +2,78 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1:1 Mimari Sabitleme</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mimari AR Sunum</title>
+    
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    
     <style>
-        body { margin: 0; padding: 0; font-family: sans-serif; }
-        model-viewer { width: 100vw; height: 100vh; }
+        body { margin: 0; padding: 0; background-color: #f8f9fa; font-family: sans-serif; }
+        model-viewer { width: 100vw; height: 100vh; display: block; }
 
-        /* Alt buton grubu */
-        .controls {
-            position: absolute; bottom: 30px; left: 50%;
-            transform: translateX(-50%); display: flex; gap: 10px; z-index: 100;
+        /* Mavi Buton Düzenlemesi */
+        #ar-button {
+            background-color: #007AFF;
+            color: white; 
+            border: none; 
+            border-radius: 50px;
+            padding: 18px 36px; 
+            font-size: 18px; 
+            font-weight: bold;
+            position: absolute; 
+            /* Buton burada yukarı çekildi */
+            bottom: 30%; 
+            left: 50%;
+            transform: translateX(-50%); 
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,122,255,0.4);
+            z-index: 999;
+            white-space: nowrap;
         }
 
-        button {
-            padding: 12px 20px; border-radius: 25px; border: none;
-            font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        #ar-button { background-color: #007AFF; color: white; }
-        #lock-button { background-color: #34C759; color: white; display: none; }
-        #lock-button.locked { background-color: #FF3B30; }
+        #progress-bar { width: 100%; height: 5px; background: #e0e0e0; position: absolute; top: 0; z-index: 1000; }
+        #update-bar { width: 0%; height: 100%; background: #007AFF; transition: width 0.3s; }
     </style>
 </head>
 <body>
 
     <model-viewer 
-        id="bina-model"
         src="model.glb" 
         ios-src="model.usdz"
-        ar ar-modes="webxr scene-viewer quick-look" 
-        ar-placement="floor" ar-scale="fixed" 
-        camera-controls shadow-intensity="1.5">
+        ar 
+        ar-modes="webxr scene-viewer quick-look" 
+        ar-placement="floor" 
+        ar-scale="fixed" 
+        camera-controls 
+        touch-action="none"
+        shadow-intensity="1.5"
+        exposure="1"
+        alt="Bina Modeli">
 
-        <div class="controls">
-            <button slot="ar-button" id="ar-button">🏢 AR BAŞLAT</button>
-            <button type="button" id="lock-button">📍 KONUMU KİLİTLE</button>
+        <div slot="progress-bar" id="progress-bar">
+            <div id="update-bar"></div>
         </div>
+
+        <button slot="ar-button" id="ar-button">
+            🏢 BİNAYI YERLEŞTİR
+        </button>
 
     </model-viewer>
 
     <script>
-        const modelViewer = document.querySelector("#bina-model");
-        const lockButton = document.querySelector("#lock-button");
-
-        // AR moduna girildiğinde sabitle butonunu göster
-        modelViewer.addEventListener('ar-status', (event) => {
-            if (event.detail.status === 'session-started') {
-                lockButton.style.display = 'block';
-            } else {
-                lockButton.style.display = 'none';
+        const modelViewer = document.querySelector('model-viewer');
+        const updateBar = document.querySelector('#update-bar');
+        
+        modelViewer.addEventListener('progress', (event) => {
+            const progress = event.detail.totalProgress * 100;
+            updateBar.style.width = `${progress}%`;
+            if (progress === 100) {
+                setTimeout(() => { updateBar.parentElement.style.display = 'none'; }, 800);
             }
         });
-
-        // Sabitleme Mantığı
-        lockButton.addEventListener('click', () => {
-            if (modelViewer.cameraControls) {
-                // Kilitle: Kontrolleri kapat
-                modelViewer.cameraControls = false;
-                lockButton.textContent = "🔓 KİLİDİ AÇ";
-                lockButton.classList.add("locked");
-                alert("Bina konumu sabitlendi. Artık parmakla hareket ettirilemez.");
-            } else {
-                // Kilidi Aç: Kontrolleri tekrar aç
-                modelViewer.cameraControls = true;
-                lockButton.textContent = "📍 KONUMU KİLİTLE";
-                lockButton.classList.remove("locked");
-            }
-        });
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>
