@@ -2,39 +2,42 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1:1 Mimari AR Sunumu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mimari AR 1:1 Sunum</title>
     
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
     
     <style>
-        body { margin: 0; padding: 0; background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
-        model-viewer { width: 100vw; height: 100vh; }
+        body { margin: 0; padding: 0; background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        model-viewer { width: 100vw; height: 100vh; display: block; }
 
-        /* AR Başlat Butonu */
+        /* AR Başlatma Butonu */
         #ar-button {
-            background-color: #007bff;
+            background-color: #007AFF;
             color: white; border: none; border-radius: 50px;
-            padding: 16px 32px; font-size: 18px; font-weight: bold;
-            position: absolute; bottom: 40px; left: 50%;
+            padding: 18px 36px; font-size: 18px; font-weight: bold;
+            position: absolute; bottom: 60px; left: 50%;
             transform: translateX(-50%); cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,123,255,0.4);
-            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0,122,255,0.4);
+            z-index: 999;
+            display: block;
         }
 
-        /* Yükleme Ekranı (Progress Bar) */
-        .progress-bar { width: 100%; height: 6px; background: #e0e0e0; position: absolute; top: 0; z-index: 200; }
-        .update-bar { width: 0%; height: 100%; background: #007bff; transition: width 0.3s; }
+        /* Yükleme Ekranı */
+        #progress-bar { width: 100%; height: 5px; background: #e0e0e0; position: absolute; top: 0; z-index: 1000; }
+        #update-bar { width: 0%; height: 100%; background: #007AFF; transition: width 0.3s; }
 
-        /* Talimat Kutusu */
-        #instructions {
-            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9); padding: 10px 20px;
-            border-radius: 10px; font-size: 14px; color: #333; text-align: center;
+        /* Hata Bilgilendirme Kutusu */
+        #error-msg {
+            display: none; position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.85); color: white; padding: 12px 20px;
+            border-radius: 10px; font-size: 14px; text-align: center; width: 80%; z-index: 1001;
         }
     </style>
 </head>
 <body>
+
+    <div id="error-msg">Kamera erişimi engellendi veya cihaz desteklemiyor.</div>
 
     <model-viewer 
         src="model.glb" 
@@ -45,35 +48,44 @@
         ar-scale="fixed" 
         camera-controls 
         touch-action="none"
-        shadow-intensity="2"
+        shadow-intensity="1.5"
         exposure="1"
-        environment-image="neutral"
-        alt="1:1 Mimari Bina Modeli">
+        alt="Bina Modeli">
 
-        <div slot="progress-bar" class="progress-bar">
-            <div class="update-bar" id="update-bar"></div>
+        <div slot="progress-bar" id="progress-bar">
+            <div id="update-bar"></div>
         </div>
 
-        <div id="instructions">Binayı görmek için boş bir alan seçin</div>
-
         <button slot="ar-button" id="ar-button">
-            🏢 SOKAĞA YERLEŞTİR (1:1)
+            🏢 BİNAYI SOKAĞA YERLEŞTİR
         </button>
 
     </model-viewer>
 
     <script>
-        // Yükleme barını kontrol eden script
         const modelViewer = document.querySelector('model-viewer');
         const updateBar = document.querySelector('#update-bar');
-        
+        const errorMsg = document.querySelector('#error-msg');
+
+        // Model yükleme takibi
         modelViewer.addEventListener('progress', (event) => {
             const progress = event.detail.totalProgress * 100;
             updateBar.style.width = `${progress}%`;
             if (progress === 100) {
-                setTimeout(() => { updateBar.parentElement.style.display = 'none'; }, 500);
+                setTimeout(() => { updateBar.parentElement.style.display = 'none'; }, 800);
+            }
+        });
+
+        // AR Modu hatalarını yakala
+        modelViewer.addEventListener('ar-status', (event) => {
+            if (event.detail.status === 'failed') {
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "AR Başlatılamadı. Lütfen Safari (iOS) veya Chrome (Android) kullandığınızdan ve HTTPS bağlantısından emin olun.";
+                setTimeout(() => { errorMsg.style.display = 'none'; }, 5000);
             }
         });
     </script>
+</body>
+</html>
 </body>
 </html>
