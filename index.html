@@ -1,82 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mimari AR Model Viewer</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Mimari AR</title>
 
-  <!-- Google Model Viewer -->
   <script type="module"
     src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
-  <style>
-    body {
-      margin: 0;
-      background: #111;
-      font-family: Arial, Helvetica, sans-serif;
-      color: #fff;
-    }
-
-    header {
-      padding: 16px;
-      text-align: center;
-      background: #1a1a1a;
-    }
-
-    model-viewer {
-      width: 100%;
-      height: calc(100vh - 80px);
-      background: #222;
-    }
-
-    footer {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      padding: 10px;
-      text-align: center;
-      background: rgba(0, 0, 0, 0.6);
-      font-size: 14px;
-    }
-  </style>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
 
-  <header>
-    <h2>Mimari Proje – AR Görüntüleme</h2>
-    <p>Modeli döndür, incele ve AR'de yerleştir</p>
+  <header class="topbar">
+    <h2>Mimari Proje</h2>
+    <p>Modeli incele ve AR’de yerleştir</p>
   </header>
 
-  <model-viewer
-    src="model.glb"
-    ios-src="model.usdz"
+  <main class="stage">
+    <model-viewer
+      src="models/model.glb"
+      ios-src="models/model.usdz"
+      ar
+      ar-modes="scene-viewer quick-look"
+      ar-placement="floor"
+      ar-scale="fixed"
+      camera-controls
+      shadow-intensity="1"
+      environment-image="neutral"
+      exposure="1">
 
-    ar
-    ar-modes="scene-viewer quick-look"
-    ar-placement="floor"
-    ar-scale="fixed"
+      <button slot="ar-button" class="arbtn">
+        AR’de Yerleştir
+      </button>
+    </model-viewer>
+  </main>
 
-    camera-controls
-    auto-rotate
-    auto-rotate-delay="2000"
-
-    shadow-intensity="1"
-    shadow-softness="0.7"
-    environment-image="neutral"
-    exposure="1"
-
-    min-camera-orbit="auto auto 5m"
-    max-camera-orbit="auto auto 30m"
-
-    alt="Mimari AR Model">
-  </model-viewer>
-
-  <footer>
-    📱 Mobilde “AR” butonuna dokunarak gerçek ortamda görüntüleyin
-  </footer>
-
+  <script src="js/app.js"></script>
 </body>
 </html>
-
